@@ -1,11 +1,11 @@
-var fs   = require('fs');
 var util = require('util');
 var ref  = require('ref');
 var events = require('events');
 
-
-Buffer.prototype.readChar 
-
+////
+// I wrote a simple wrapper around the Buffer object
+// This allows it to keep track of the offset
+//
 var MyBuffer = function(buf) {
 	this.buf = buf;
   this.offset = 0;
@@ -71,17 +71,19 @@ MyBuffer.prototype.readUInt64BE = function(noAssert) {
   return ret;
 };
 
-
 MyBuffer.prototype.undo = function(bytes) {
   this.offset -= bytes;
 }
+
+////
+// Simple Assertion Exception
 
 function AssertException(message) {
   this.name    = "AssertException";
   this.message = message;
 };
 
-util.inherits(AssertException.prototype, Error.prototype);
+util.inherits(AssertException, Error);
 AssertException.prototype.toString = function () {
   return 'AssertException: ' + this.message;
 };
@@ -97,6 +99,11 @@ function expect(actual, expected) {
    throw new Error("Expected " + expected + " got " + actual);
   }
 }
+
+
+////
+// Hessian stuff starts !
+//
 
 function read_raw_string(buf, encoding) {
   var len = buf.readUInt16BE();
@@ -188,8 +195,6 @@ function read_object(buf) {
 }
 
 function read_call(buf) {
-  var call;
-
   expect(buf.readUInt8(), 0x00);
   expect(buf.readUInt8(), 0x01);
 
@@ -211,47 +216,56 @@ function read_call(buf) {
   return {method : method, arguments: arguments};
 }
 
-fs.readFile('routeMessageMt', function (err, buf) {
-  if (err) throw err;
-  console.log(buf);
+/*
+while (! buf.eof() ) {
+
+  console.log ( hessian )
+
+  var c = buf.readChar();
+  switch (c) {
+    case 'c' : // Call
+      var call = read_call(buf);
+
+      console.log( call );
+      console.log( call.arguments )
+      break;
+    default:
+      assert(false, 'unhandled type ' + c);
+  }
+}
+*/
+
+exports.parse = function(buf) {
   buf = new MyBuffer(buf);
 
-  while (! buf.eof() ) {
-    var c = buf.readChar();
-    switch (c) {
-      case 'c' : // Call
-        var call = read_call(buf);
+  var c = buf.readChar();
+  switch (c) {
+    case 'c' : // Call
+      return read_call(buf);
 
-        console.log( call );
-        console.log( call.arguments )
-        break;
-      default:
-        assert(false, 'unhandled type ' + c);
-    }
+    default:
+      assert(false, 'unhandled type ' + c);
   }
-});
+
+}
 
 Eventer = function(){
   events.EventEmitter.call(this);
-  this.kapow = function(){
-    var data = "BATMAN"
-    this.emit('call', call);
-  }
-
-  this.bam = function(){
-     this.emit("boom");
-  }
+  //this.emit('call', call);
  };
 util.inherits(Eventer, events.EventEmitter);
 
-eventer.on('call', function(data){
+var eventer = new Eventer();
+
+eventer.on('call', function(data) {
+  console.log( data.method );
+  console.log( data.arguments )
+});
+
+eventer.on('reply', function(data) {
 
 });
 
-eventer.on('reply', function(data){
-
-});
-
-eventer.on('fault', function(data){
+eventer.on('fault', function(data) {
 
 });
