@@ -1,12 +1,14 @@
 var fs   = require('fs');
-var hessian = require('./hessian');
+var hessian = require('../lib/hessian.js');
 
-
-fs.readFile('routeMessageMt', function (err, buf) {
+var testFile = 'testdata/MOs';
+fs.readFile(testFile, function (err, buf) {
 	if (err) throw err;
 	console.log(buf);
 
-	var obj = hessian.parse( buf );
-	console.log (obj);
+	hessian.parse( buf, function(obj, offset) {
+		console.log (obj);
+	} ); /* .on('error', ...) */
+
 
 });
