@@ -1,4 +1,5 @@
 .PHONY : test
 
 test :
-	node test/test.js
+	expresso test/encode-decode-test.js
+	#node test/test.js
