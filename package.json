@@ -1,6 +1,6 @@
 {
   "name": "hessian",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Support for the Hessian Binary Web Service protocol",
   "main": "./hessian.js",
   "scripts": {
