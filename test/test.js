@@ -23,6 +23,6 @@ var testFile = 'testdata/MOs';
 fs.readFile(testFile, function (err, buf) {
 	if (err) throw err;
 
-	parser.parse(buf);
+	parser.decode(buf);
 
 });

@@ -45,7 +45,7 @@ parser.on('error', function(err) {
 });
 
 // Now begin the parsing
-parser.parse(buf);
+parser.decode(buf);
 
 ```
 
