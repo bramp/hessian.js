@@ -3,7 +3,7 @@ Hessian.js
 
 This is an implementation of the Hessian protocol written in JavaScript for Node  
 by Andrew Brampton [http://bramp.net](bramp.net)  
-Copyright 2012
+Copyright 2012-2013
 
 Protocol reference:
 -------------------
@@ -12,7 +12,7 @@ Protocol reference:
 Intro
 -----
 
-Currently only reading hessian is supported, writing is not.
+Reading and writing hessian is supported
 All valid hessian can be parsed, except for XML, Ref and Remote elements.
 
 Install
@@ -24,6 +24,8 @@ npm install hessian
 
 Example
 -------
+
+Decoding
 
 ```javascript
 var parser = new hessian.HessianParser();
@@ -37,7 +39,7 @@ parser.on('reply', function(reply, offset) {
 });
 
 parser.on('object', function(obj, offset) {
-	// May be called multiple times
+	// Will be called once for each object
 });
 
 parser.on('error', function(err) {
@@ -49,10 +51,22 @@ parser.decode(buf);
 
 ```
 
+Encoding
+
+```javascript
+var map = { 'map' : {key: value, key2: value2} };
+var list = { 'list' : [1, 2, 3] [, type: 'int'] };
+var string = "string";
+var int = 123;
+var bool = true;
+var null = null;
+
+var buf = hessian.encode(obj);
+```
+
 TODO
 ----
 
 * Finish supporting all elements
-* Adding writing support
 * Add reply/fault support
 * Find a good set of unit tests
